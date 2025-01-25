@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Title>JWT Token Manager - Secure and Easy Token Generation</Title>
+        <Authors>Jose Beltre</Authors>
+        <Description>A lightweight library for generating and managing JWT tokens in .NET applications. Supports access, refresh, and ID tokens with full .NET 9.0 compatibility.</Description>
+        <Copyright>© 2025 Jose Beltre</Copyright>
+        <PackageIcon>icon.png</PackageIcon>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>JWT, Token, Authentication, .NET 9.0, Open Source, MIT License, AccessToken, RefreshToken, IdToken</PackageTags>
+        <PackageReleaseNotes>Notes	Initial release of JwtTokenManager. Includes access token, refresh token, and ID token generation, validation, and secure hashing with .NET 9.0 support.</PackageReleaseNotes>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <AssemblyVersion>1.0.0.0</AssemblyVersion>
+        <FileVersion>1.0.0.0</FileVersion>
+        <NeutralLanguage>en-US</NeutralLanguage>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.1" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="icon.png" Pack="true" PackagePath="\">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="LICENSE" Pack="true" PackagePath="\">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="README.md" Pack="true" PackagePath="\">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+</Project>
