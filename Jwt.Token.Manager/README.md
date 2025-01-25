@@ -20,5 +20,5 @@ The **Token Management System** is a robust and flexible .NET library for managi
 Install the package via NuGet:
 
 ```bash
-dotnet add package Jwt.Token.Manager
+dotnet add package Identity.Jwt.Token.Manager
 
