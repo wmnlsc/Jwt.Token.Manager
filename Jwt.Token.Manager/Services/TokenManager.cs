@@ -96,7 +96,7 @@ public class TokenManager(IOptions<TokenOptionModel> options) : ITokenManager
         {
             var publicToken = CreateRefreshToken();
             var privateToken = HashRefreshToken(publicToken);
-            var expiryTime = DateTime.UtcNow.AddDays(options.Value.RefreshTokenExpirationDays);
+            var expiryTime = DateTimeOffset.UtcNow.AddDays(options.Value.RefreshTokenExpirationDays);
             return new RefreshTokenModel(publicToken, privateToken, expiryTime);
         }
         catch (Exception ex)
@@ -161,7 +161,7 @@ public class TokenManager(IOptions<TokenOptionModel> options) : ITokenManager
         var clientToken = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(refreshToken.PublicToken)))
             .TrimEnd('=').Replace('+', '-').Replace('/', '_');
 
-        return refreshToken.PrivateToken == clientToken && refreshToken.ExpiresOn > DateTime.UtcNow;
+        return refreshToken.PrivateToken == clientToken && refreshToken.ExpiresOn > DateTimeOffset.UtcNow;
     }
 
     // Private helpers

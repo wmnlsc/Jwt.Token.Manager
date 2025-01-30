@@ -18,7 +18,7 @@ namespace Jwt.Token.Manager.Models;
 /// Console.WriteLine($"Expires On: {refreshToken.ExpiresOn}");
 /// </code>
 /// </example>
-public class RefreshTokenModel(string publicToken, string privateToken, DateTime expiresOn)
+public class RefreshTokenModel(string publicToken, string privateToken, DateTimeOffset expiresOn)
 {
     /// <summary>
     /// Gets or sets the public token that is sent to the client for future access token renewal requests.
@@ -33,5 +33,5 @@ public class RefreshTokenModel(string publicToken, string privateToken, DateTime
     /// <summary>
     /// Gets or sets the expiration time of the refresh token.
     /// </summary>
-    public DateTime ExpiresOn { get; set; } = expiresOn;
+    public DateTimeOffset ExpiresOn { get; set; } = expiresOn;
 }
