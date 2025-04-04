@@ -21,7 +21,7 @@ namespace Jwt.Token.Manager.Models;
 public class RefreshTokenModel(string publicToken, string privateToken, DateTimeOffset expiresOn)
 {
     /// <summary>
-    /// Gets or sets the public token that is sent to the client for future access token renewal requests.
+    /// Gets or sets the public token sent to the client for future access token renewal requests.
     /// </summary>
     public string PublicToken { get; set; } = publicToken;
     

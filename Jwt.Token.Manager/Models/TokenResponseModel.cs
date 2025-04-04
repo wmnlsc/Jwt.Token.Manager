@@ -6,7 +6,7 @@ namespace Jwt.Token.Manager.Models;
 /// <remarks>
 /// This model encapsulates essential information about the generated tokens, including the access token, 
 /// optional refresh token, optional ID token, and metadata like the user's ID and whether the token is for 
-/// multi-factor authentication (MFA).
+/// Multi-Factor Authentication (MFA).
 /// </remarks>
 /// <example>
 /// Example usage:

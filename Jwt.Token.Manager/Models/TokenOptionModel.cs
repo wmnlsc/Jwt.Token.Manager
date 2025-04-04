@@ -29,7 +29,7 @@ namespace Jwt.Token.Manager.Models;
 /// builder.Services.Configure
 /// </code>
 /// </example>
-public class TokenOptionModel
+public class JwtTokenOptionModel
 {
     /// <summary>
     /// Gets or sets the secret key used to sign JWT tokens.
@@ -53,29 +53,67 @@ public class TokenOptionModel
     public string Audience { get; set; }
     
     /// <summary>
-    /// Gets or sets the expiration time (in minutes) for access tokens.
+    /// How long the access token should be valid.
     /// </summary>
-    /// <remarks>
-    /// Access tokens are typically short-lived to reduce security risks in case of token compromise.
-    /// </remarks>
-    [Range(1, int.MaxValue)]
-    public int AccessTokenExpirationMinutes { get; set; } = 60;
-    
+    [Required]
+    public TimeSpan AccessTokenLifetime { get; set; } = TimeSpan.FromMinutes(30);
+
     /// <summary>
-    /// Gets or sets the expiration time (in days) for refresh tokens.
+    /// How long the refresh token should be valid.
     /// </summary>
-    /// <remarks>
-    /// Refresh tokens are longer-lived and used to obtain new access tokens without requiring re-authentication.
-    /// </remarks>
-    [Range(1, int.MaxValue)]
-    public int RefreshTokenExpirationDays { get; set; } = 14;
-    
+    [Required]
+    public TimeSpan RefreshTokenLifetime { get; set; } = TimeSpan.FromHours(10);
+
     /// <summary>
-    /// Gets or sets the expiration time (in minutes) for ID tokens.
+    /// How long the ID token should be valid.
     /// </summary>
-    /// <remarks>
-    /// ID tokens are used to convey user identity information and are commonly issued alongside access tokens.
-    /// </remarks>
-    [Range(1, int.MaxValue)]
-    public int IdTokenExpirationMinutes { get; set; } = 30;
+    [Required]
+    public TimeSpan IdTokenLifetime { get; set; } = TimeSpan.FromMinutes(60);
+}
+
+/// <summary>
+/// Configuration options for RSA-based JWT authentication.
+/// </summary>
+public class RsaTokenOptions
+{
+    /// <summary>
+    /// Full file system path to the RSA private key used for signing tokens.
+    /// </summary>
+    [Required]
+    public string PrivateKeyPath { get; set; } = null!;
+
+    /// <summary>
+    /// Optional path to the public key used for validating tokens.
+    /// </summary>
+    public string PublicKeyPath { get; set; }  = string.Empty;
+
+    /// <summary>
+    /// The token issuer (typically your authentication server URL).
+    /// </summary>
+    [Required]
+    public string Issuer { get; set; } = null!;
+
+    /// <summary>
+    /// The intended audience for the token (e.g., your API URL).
+    /// </summary>
+    [Required]
+    public string Audience { get; set; } = null!;
+
+    /// <summary>
+    /// How long the access token should be valid.
+    /// </summary>
+    [Required]
+    public TimeSpan AccessTokenLifetime { get; set; } = TimeSpan.FromMinutes(30);
+
+    /// <summary>
+    /// How long the refresh token should be valid.
+    /// </summary>
+    [Required]
+    public TimeSpan RefreshTokenLifetime { get; set; } = TimeSpan.FromHours(10);
+
+    /// <summary>
+    /// How long the ID token should be valid.
+    /// </summary>
+    [Required]
+    public TimeSpan IdTokenLifetime { get; set; } = TimeSpan.FromMinutes(60);
 }

@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Jwt.Token.Manager.Interfaces;
 using Jwt.Token.Manager.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -16,7 +15,7 @@ namespace Jwt.Token.Manager.Services;
 /// <remarks>
 /// This class is designed to work with JWT-based authentication systems. It leverages the Microsoft IdentityModel 
 /// and SecurityToken libraries for token creation and validation. It uses options from the 
-/// <see cref="TokenOptionModel"/> class to configure essential settings like the secret key, issuer, audience, and 
+/// <see cref="JwtTokenOptionModel"/> class to configure essential settings like the secret key, issuer, audience, and 
 /// token expiration times.
 /// </remarks>
 /// <example>
@@ -31,7 +30,7 @@ namespace Jwt.Token.Manager.Services;
 /// var claims = new List
 /// </code>
 /// </example>
-public class TokenManager(IOptions<TokenOptionModel> options) : ITokenManager 
+public class JwtTokenManager(IOptions<JwtTokenOptionModel> options)
 {
     /// <summary>
     /// Generates a JWT access token based on the provided claims and configuration.
@@ -54,11 +53,12 @@ public class TokenManager(IOptions<TokenOptionModel> options) : ITokenManager
             throw new InvalidOperationException("Secret Key is not configured.");
         
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Value.SecretKey));
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+        var now = DateTime.UtcNow;
         var expires = isTwoFactor
-            ? DateTime.UtcNow.AddMinutes(10)
-            : DateTime.UtcNow.AddMinutes(options.Value.AccessTokenExpirationMinutes);
+            ? now.AddMinutes(10)
+            : now.Add(options.Value.AccessTokenLifetime);
 
         var tokenDescription = new SecurityTokenDescriptor
         {
@@ -67,7 +67,7 @@ public class TokenManager(IOptions<TokenOptionModel> options) : ITokenManager
             Issuer = options.Value.Issuer,
             Audience = options.Value.Audience,
             NotBefore = DateTime.UtcNow,
-            SigningCredentials = credentials
+            SigningCredentials = signingCredentials
         };
 
         try
@@ -89,14 +89,15 @@ public class TokenManager(IOptions<TokenOptionModel> options) : ITokenManager
     /// <exception cref="InvalidOperationException">Thrown when the refresh token expiration days are invalid.</exception>
     public RefreshTokenModel GenerateRefreshToken()
     {
-        if (options.Value.RefreshTokenExpirationDays <= 0)
+        var now = DateTime.UtcNow;
+        if (options.Value.RefreshTokenLifetime <= TimeSpan.Zero)
             throw new InvalidOperationException("Refresh token expiration days must be greater than zero.");
 
         try
         {
             var publicToken = CreateRefreshToken();
             var privateToken = HashRefreshToken(publicToken);
-            var expiryTime = DateTimeOffset.UtcNow.AddDays(options.Value.RefreshTokenExpirationDays);
+            var expiryTime = now.Add(options.Value.RefreshTokenLifetime);
             return new RefreshTokenModel(publicToken, privateToken, expiryTime);
         }
         catch (Exception ex)
@@ -125,16 +126,19 @@ public class TokenManager(IOptions<TokenOptionModel> options) : ITokenManager
             throw new InvalidOperationException("Secret Key is not configured.");
         
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Value.SecretKey));
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+        var now = DateTime.UtcNow;
+        var expires = now.Add(options.Value.IdTokenLifetime);
+        
         var tokenDescription = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claimsList),
-            Expires = DateTime.UtcNow.AddMinutes(options.Value.AccessTokenExpirationMinutes),
+            Expires = expires,
             Issuer = options.Value.Issuer,
             Audience = options.Value.Audience,
-            NotBefore = DateTime.UtcNow,
-            SigningCredentials = credentials
+            NotBefore = now,
+            SigningCredentials = signingCredentials
         };
 
         try
@@ -182,6 +186,7 @@ public class TokenManager(IOptions<TokenOptionModel> options) : ITokenManager
     /// </summary>
     /// <param name="token">The refresh token to hash.</param>
     /// <returns>A URL-safe, base64-encoded hash of the refresh token.</returns>
-    private static string HashRefreshToken(string token) => Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(token)))
+    private static string HashRefreshToken(string token) 
+        => Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(token)))
             .TrimEnd('=').Replace('+', '-').Replace('/', '_');
 }
