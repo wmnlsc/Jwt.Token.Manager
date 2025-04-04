@@ -20,7 +20,7 @@
         <PackageProjectUrl>https://github.com/wmnlsc/Jwt.Token.Manager</PackageProjectUrl>
         <RepositoryUrl>https://github.com/wmnlsc/Jwt.Token.Manager</RepositoryUrl>
         <PackageId>Identity.Jwt.Token.Manager</PackageId>
-        <Version>1.0.1</Version>
+        <Version>9.0.3</Version>
     </PropertyGroup>
 
     <ItemGroup>
